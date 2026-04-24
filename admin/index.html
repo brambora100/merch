@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Rytíři (Split View)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --blue: #003366; --gold: #ffcc00; --red: #ff4757; --bg: #f0f4f8; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; color: #1e293b; overflow-x: hidden; }
+        
+        /* Layout */
+        .admin-wrapper { display: flex; flex-wrap: wrap; height: 100vh; }
+        .control-side { flex: 1; min-width: 350px; background: white; padding: 30px; border-right: 2px solid #e2e8f0; overflow-y: auto; }
+        .stats-side { flex: 1; min-width: 350px; padding: 30px; overflow-y: auto; background: var(--bg); }
+
+        h2 { font-size: 0.8rem; text-transform: uppercase; font-weight: 900; color: var(--blue); margin: 0 0 20px 0; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+        .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #edf2f7; }
+
+        /* Controls */
+        input, select { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; margin-bottom: 12px; font-family: inherit; font-weight: 600; font-size: 0.9rem; }
+        .btn { border: none; padding: 16px; border-radius: 50px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-blue { background: var(--blue); color: white; }
+        .btn-red-outline { background: #fff1f2; color: var(--red); margin-top: 10px; font-size: 0.7rem; border: 1px solid #ffe4e6; }
+
+        /* Stats & Analytics */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .stat-item { background: white; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #edf2f7; }
+        .stat-item b { font-size: 1.3rem; color: var(--blue); display: block; }
+        .stat-item span { font-size: 0.6rem; font-weight: 800; color: #94a3b8; }
+
+        .progress-bar-bg { background: #e2e8f0; height: 8px; border-radius: 10px; margin-top: 5px; overflow: hidden; }
+        .progress-bar-fill { background: var(--gold); height: 100%; border-radius: 10px; transition: width 0.6s ease; }
+
+        /* Match Code Pill */
+        .active-pill { background: var(--gold); padding: 20px; border-radius: 15px; text-align: center; border: 3px dashed var(--blue); margin: 15px 0; }
+        .active-pill h1 { margin: 0; font-size: 2.5rem; letter-spacing: 5px; color: var(--blue); }
+
+        /* Rows */
+        .m-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
+        .m-row i { margin-right: 10px; color: var(--blue); width: 20px; text-align: center; }
+
+        @media (max-width: 768px) { .admin-wrapper { height: auto; } .control-side, .stats-side { flex: none; width: 100%; height: auto; } }
+    </style>
+</head>
+<body>
+
+<div class="admin-wrapper">
+    
+    <div class="control-side">
+        <img src="https://hcvlasim.esports.cz/files/editor/Hlavni%20logo.png" style="height: 50px; margin-bottom: 20px;">
+        
+        <div class="card">
+            <h2><i class="fa-solid fa-play"></i> Aktivace zápasu</h2>
+            <div id="setupMatch">
+                <input type="text" id="mName" placeholder="Název soupeře (např. HC Tábor)">
+                <button class="btn btn-blue" onclick="runMatch()">Vytvořit kód</button>
+            </div>
+            <div id="liveMatch" style="display:none">
+                <div style="font-weight: 900; text-align:center; color:var(--blue);" id="currMatchName">---</div>
+                <div class="active-pill">
+                    <small style="font-weight:800; font-size:0.6rem;">KÓD PRO POKLADNY</small>
+                    <h1 id="currMatchCode">----</h1>
+                </div>
+                <button class="btn btn-red-outline" onclick="endMatch()">UKONČIT & ODHLÁSIT VŠE</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-box-open"></i> Přidat produkt</h2>
+            <input type="text" id="pName" placeholder="Název (např. Šála)">
+            <input type="number" id="pPrice" placeholder="Cena v Kč">
+            
+            <label style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 5px; margin-left: 5px;">VYBER IKONU:</label>
+            <select id="pIcon">
+                <option value="fa-hockey-puck">🏒 Puk</option>
+                <option value="fa-circle-dot">⚪ Puk s logem</option>
+                <option value="fa-mitten">🧢 Kulich / Čepice</option>
+                <option value="fa-scroll">🧣 Šála</option>
+                <option value="fa-chair">💺 Podsedák</option>
+                <option value="fa-shirt">👕 Dres</option>
+                <option value="fa-square">🧲 Magnetka</option>
+                <option value="fa-hat-cowboy">🎓 Kšiltovka</option>
+                <option value="fa-key">🔑 Klíčenka</option>
+                <option value="fa-mug-hot">☕ Hrníček</option>
+                <option value="fa-pen">🖋️ Propiska</option>
+            </select>
+
+            <button class="btn btn-blue" style="background:var(--gold); color:var(--blue)" onclick="saveProd()">Uložit do nabídky</button>
+            
+            <div id="pList" style="margin-top: 25px; border-top: 2px solid #f1f5f9; padding-top: 10px;">
+                </div>
+        </div>
+    </div>
+
+    <div class="stats-side">
+        <h2><i class="fa-solid fa-chart-bar"></i> Statistiky prodejů</h2>
+        
+        <div class="stat-grid">
+            <div class="stat-item"><b id="sumRev">0 Kč</b><span>Tržba celkem</span></div>
+            <div class="stat-item"><b id="sumQty">0</b><span>Prodané kusy</span></div>
+        </div>
+
+        <div class="card">
+            <h2>Filtr podle zápasu</h2>
+            <select id="mFilter" onchange="refreshData()"></select>
+            
+            <div id="topSellers" style="margin-top:20px;">
+                </div>
+        </div>
+
+        <div class="card">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> Historie a mazání</h2>
+            <div id="mHistory">
+                </div>
+        </div>
+    </div>
+
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyD3l9DlvXV5Nv3FKJxHidfTIoWV-jUv4Bw",
+        authDomain: "vlasimmerch.firebaseapp.com",
+        projectId: "vlasimmerch",
+        storageBucket: "vlasimmerch.firebasestorage.app",
+        messagingSenderId: "830271449130",
+        appId: "1:830271449130:web:a64c16b612c72e5f1f3b53"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    let sales = [];
+
+    // --- OVLÁDÁNÍ ---
+    window.runMatch = async () => {
+        const n = document.getElementById("mName").value;
+        if(!n) return;
+        const c = Math.random().toString(36).substring(2, 6).toUpperCase();
+        await setDoc(doc(db, "nastaveni", "aktivni_zapas"), { kod: c, nazev: n });
+        await setDoc(doc(db, "historie_zapasu", n), { nazev: n });
+        document.getElementById("mName").value = "";
+    };
+
+    window.endMatch = async () => { if(confirm("Opravdu ukončit zápas a odhlásit všechny pokladny?")) await deleteDoc(doc(db, "nastaveni", "aktivni_zapas")); };
+
+    window.saveProd = async () => {
+        const n = document.getElementById("pName").value;
+        const p = document.getElementById("pPrice").value;
+        const i = document.getElementById("pIcon").value;
+        if(n && p) {
+            await setDoc(doc(db, "produkty", n), { name: n, price: parseInt(p), icon: i });
+            document.getElementById("pName").value = ""; document.getElementById("pPrice").value = "";
+        }
+    };
+
+    // --- LIVE UPDATES ---
+    onSnapshot(doc(db, "nastaveni", "aktivni_zapas"), s => {
+        const live = document.getElementById("liveMatch");
+        const setup = document.getElementById("setupMatch");
+        if(s.exists()){
+            live.style.display="block"; setup.style.display="none";
+            document.getElementById("currMatchCode").innerText = s.data().kod;
+            document.getElementById("currMatchName").innerText = s.data().nazev;
+        } else {
+            live.style.display="none"; setup.style.display="block";
+        }
+    });
+
+    onSnapshot(collection(db, "produkty"), snap => {
+        const l = document.getElementById("pList"); l.innerHTML = "";
+        snap.forEach(d => {
+            const data = d.data();
+            l.innerHTML += `
+                <div class="m-row">
+                    <span><i class="fa-solid ${data.icon || 'fa-hockey-puck'}"></i> ${data.name} (${data.price} Kč)</span>
+                    <i class="fa-solid fa-trash" style="color:red; cursor:pointer; margin:0" onclick="deleteDoc(doc(db, 'produkty', '${d.id}'))"></i>
+                </div>`;
+        });
+    });
+
+    onSnapshot(collection(db, "historie_zapasu"), snap => {
+        const hist = document.getElementById("mHistory");
+        const filter = document.getElementById("mFilter");
+        const cur = filter.value;
+        hist.innerHTML = ""; filter.innerHTML = '<option value="all">Celá sezóna</option>';
+        snap.forEach(d => {
+            const n = d.id;
+            filter.innerHTML += `<option value="${n}">${n}</option>`;
+            hist.innerHTML += `<div class="m-row"><b>${n}</b><button class="btn" style="width:auto; padding:5px 10px; font-size:0.6rem; background:#fee2e2; color:red" onclick="fullDelete('${n}')">SMAZAT</button></div>`;
+        });
+        filter.value = cur || "all";
+    });
+
+    window.fullDelete = async (n) => {
+        if(!confirm(`Smazat zápas ${n} a všechny tržby?`)) return;
+        await deleteDoc(doc(db, "historie_zapasu", n));
+        const q = query(collection(db, "objednavky"), where("zapas", "==", n));
+        const snap = await getDocs(q);
+        snap.forEach(async d => await deleteDoc(doc(db, "objednavky", d.id)));
+    };
+
+    onSnapshot(collection(db, "objednavky"), snap => {
+        sales = []; snap.forEach(d => sales.push(d.data()));
+        refreshData();
+    });
+
+    window.refreshData = () => {
+        const f = document.getElementById("mFilter").value;
+        const filtered = f === "all" ? sales : sales.filter(s => s.zapas === f);
+        let totalRev = 0; let totalQty = 0; let pMap = {};
+        filtered.forEach(s => {
+            totalRev += s.celkem;
+            s.polozky.forEach(p => {
+                totalQty += p.qty;
+                pMap[p.name] = (pMap[p.name] || 0) + p.qty;
+            });
+        });
+        document.getElementById("sumRev").innerText = totalRev.toLocaleString() + " Kč";
+        document.getElementById("sumQty").innerText = totalQty;
+        const topArea = document.getElementById("topSellers");
+        const sorted = Object.entries(pMap).sort((a,b) => b[1] - a[1]);
+        if(!sorted.length) { topArea.innerHTML = "Zatím žádné prodeje."; return; }
+        const max = sorted[0][1];
+        topArea.innerHTML = sorted.map(([name, count]) => `
+            <div style="margin-bottom:12px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700;"><span>${name}</span><span>${count} ks</span></div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${(count/max)*100}%"></div></div>
+            </div>
+        `).join("");
+    };
+
+    // Export funkcí do window pro HTML onclick
+    window.deleteDoc = deleteDoc;
+    window.doc = doc;
+    window.db = db;
+</script>
+</body>
+</html>
