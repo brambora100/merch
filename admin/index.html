@@ -2,101 +2,131 @@
 <html lang="cs">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Rytíři (Split View)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Admin Vlašim">
+    <link rel="apple-touch-icon" href="https://hcvlasim.esports.cz/files/editor/Hlavni%20logo.png">
+    <title>Admin - HC Vlašim</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        :root { --blue: #003366; --gold: #ffcc00; --red: #ff4757; --bg: #f0f4f8; }
+        :root { 
+            --vlasim-blue: #196db6; 
+            --vlasim-white: #ffffff; 
+            --bg: #f4f7f9; 
+            --text: #2c3e50;
+            --red: #e74c3c;
+            --green: #27ae60;
+        }
         * { box-sizing: border-box; }
-        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; color: #1e293b; overflow-x: hidden; }
-        
+        body { font-family: 'Montserrat', sans-serif; background: var(--bg); margin: 0; color: var(--text); }
+
         /* Layout */
         .admin-wrapper { display: flex; flex-wrap: wrap; height: 100vh; }
-        .control-side { flex: 1; min-width: 350px; background: white; padding: 30px; border-right: 2px solid #e2e8f0; overflow-y: auto; }
-        .stats-side { flex: 1; min-width: 350px; padding: 30px; overflow-y: auto; background: var(--bg); }
+        .side { flex: 1; min-width: 380px; padding: 30px; overflow-y: auto; height: 100vh; }
+        .control-side { background: var(--vlasim-white); border-right: 2px solid #e1e8ed; }
+        .stats-side { background: var(--bg); }
 
-        h2 { font-size: 0.8rem; text-transform: uppercase; font-weight: 900; color: var(--blue); margin: 0 0 20px 0; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
-        .card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #edf2f7; }
+        header { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+        header img { height: 60px; }
+        header h1 { font-weight: 900; color: var(--vlasim-blue); margin: 0; font-size: 1.4rem; }
 
-        /* Controls */
-        input, select { width: 100%; padding: 14px; border-radius: 12px; border: 2px solid #f1f5f9; margin-bottom: 12px; font-family: inherit; font-weight: 600; font-size: 0.9rem; }
-        .btn { border: none; padding: 16px; border-radius: 50px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
-        .btn-blue { background: var(--blue); color: white; }
-        .btn-red-outline { background: #fff1f2; color: var(--red); margin-top: 10px; font-size: 0.7rem; border: 1px solid #ffe4e6; }
+        .card { background: white; border-radius: 25px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 25px; border: 1px solid #edf2f7; }
+        h2 { font-size: 0.85rem; text-transform: uppercase; font-weight: 900; color: var(--vlasim-blue); margin: 0 0 20px 0; display: flex; align-items: center; gap: 10px; opacity: 0.8; }
 
-        /* Stats & Analytics */
-        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-item { background: white; padding: 15px; border-radius: 15px; text-align: center; border: 1px solid #edf2f7; }
-        .stat-item b { font-size: 1.3rem; color: var(--blue); display: block; }
-        .stat-item span { font-size: 0.6rem; font-weight: 800; color: #94a3b8; }
+        /* Inputs & Buttons */
+        input, select { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #f1f5f9; margin-bottom: 12px; font-family: inherit; font-weight: 700; font-size: 0.95rem; outline: none; transition: 0.2s; }
+        input:focus { border-color: var(--vlasim-blue); }
+        
+        .btn { border: none; padding: 16px; border-radius: 50px; width: 100%; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s; font-size: 0.9rem; }
+        .btn-blue { background: var(--vlasim-blue); color: white; box-shadow: 0 5px 15px rgba(25, 109, 182, 0.3); }
+        .btn-green { background: var(--green); color: white; }
+        .btn-red-outline { background: #fff1f2; color: var(--red); border: 1px solid #ffe4e6; font-size: 0.75rem; margin-top: 15px; }
 
-        .progress-bar-bg { background: #e2e8f0; height: 8px; border-radius: 10px; margin-top: 5px; overflow: hidden; }
-        .progress-bar-fill { background: var(--gold); height: 100%; border-radius: 10px; transition: width 0.6s ease; }
+        /* Stats */
+        .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-item { background: white; padding: 20px; border-radius: 20px; text-align: center; border: 1px solid #edf2f7; }
+        .stat-item b { font-size: 1.8rem; color: var(--vlasim-blue); display: block; font-weight: 900; }
+        .stat-item span { font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase; }
 
-        /* Match Code Pill */
-        .active-pill { background: var(--gold); padding: 20px; border-radius: 15px; text-align: center; border: 3px dashed var(--blue); margin: 15px 0; }
-        .active-pill h1 { margin: 0; font-size: 2.5rem; letter-spacing: 5px; color: var(--blue); }
+        /* Active Match Pill */
+        .active-pill { background: #eef7ff; padding: 20px; border-radius: 20px; text-align: center; border: 2px dashed var(--vlasim-blue); margin: 15px 0; }
+        .active-pill h1 { margin: 5px 0; font-size: 2.8rem; color: var(--vlasim-blue); font-weight: 900; letter-spacing: 3px; }
 
-        /* Rows */
-        .m-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.85rem; }
-        .m-row i { margin-right: 10px; color: var(--blue); width: 20px; text-align: center; }
+        /* Tables/Rows */
+        .m-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 5px; border-bottom: 1px solid #f1f5f9; }
+        .m-row:last-child { border: none; }
+        .m-row i { color: var(--vlasim-blue); margin-right: 8px; }
+        .trash-btn { color: var(--red); cursor: pointer; padding: 5px; transition: 0.2s; }
+        .trash-btn:hover { transform: scale(1.2); }
 
-        @media (max-width: 768px) { .admin-wrapper { height: auto; } .control-side, .stats-side { flex: none; width: 100%; height: auto; } }
+        /* Progress Bars */
+        .progress-bg { background: #f1f5f9; height: 10px; border-radius: 10px; margin-top: 8px; overflow: hidden; }
+        .progress-fill { background: var(--vlasim-blue); height: 100%; border-radius: 10px; transition: width 0.8s ease; }
+
+        @media (max-width: 800px) { .admin-wrapper { height: auto; } .side { flex: none; width: 100%; height: auto; } }
     </style>
 </head>
 <body>
 
 <div class="admin-wrapper">
     
-    <div class="control-side">
-        <img src="https://hcvlasim.esports.cz/files/editor/Hlavni%20logo.png" style="height: 50px; margin-bottom: 20px;">
-        
-        <div class="card">
-            <h2><i class="fa-solid fa-play"></i> Aktivace zápasu</h2>
+    <div class="side control-side">
+        <header>
+            <img src="https://hcvlasim.esports.cz/files/editor/Hlavni%20logo.png" alt="Logo">
+            <h1>ADMIN PANEL</h1>
+        </header>
+
+        <div class="card" style="border-left: 5px solid var(--vlasim-blue);">
+            <h2><i class="fa-solid fa-hockey-puck"></i> Správa zápasu</h2>
             <div id="setupMatch">
                 <input type="text" id="mName" placeholder="Název soupeře (např. HC Tábor)">
-                <button class="btn btn-blue" onclick="runMatch()">Vytvořit kód</button>
+                <button class="btn btn-blue" onclick="runMatch()">AKTIVOVAT NOVÝ ZÁPAS</button>
             </div>
             <div id="liveMatch" style="display:none">
-                <div style="font-weight: 900; text-align:center; color:var(--blue);" id="currMatchName">---</div>
+                <div style="font-weight: 900; text-align:center; color:var(--text); font-size: 1.1rem;" id="currMatchName">---</div>
                 <div class="active-pill">
-                    <small style="font-weight:800; font-size:0.6rem;">KÓD PRO POKLADNY</small>
+                    <small style="font-weight:800; font-size:0.7rem; opacity: 0.6;">PŘÍSTUPOVÝ KÓD</small>
                     <h1 id="currMatchCode">----</h1>
                 </div>
-                <button class="btn btn-red-outline" onclick="endMatch()">UKONČIT & ODHLÁSIT VŠE</button>
+                <button class="btn btn-red-outline" onclick="endMatch()">UKONČIT ZÁPAS A ODHLÁSIT POKLADNY</button>
             </div>
         </div>
 
+        <div class="card" style="border-left: 5px solid var(--green);">
+            <h2><i class="fa-solid fa-credit-card"></i> Nastavení QR platby</h2>
+            <p style="font-size: 0.7rem; font-weight: 700; margin-bottom: 10px; opacity: 0.7;">ČÍSLO ÚČTU PRO GENEROVÁNÍ KÓDŮ:</p>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="bankAccInput" placeholder="Např. 123456789/0000" style="margin-bottom: 0;">
+                <button class="btn btn-green" style="width: auto; padding: 0 20px;" onclick="saveBank()">ULOŽIT</button>
+            </div>
+        </div>
+        
         <div class="card">
-            <h2><i class="fa-solid fa-box-open"></i> Přidat produkt</h2>
-            <input type="text" id="pName" placeholder="Název (např. Šála)">
+            <h2><i class="fa-solid fa-plus-circle"></i> Správa produktů</h2>
+            <input type="text" id="pName" placeholder="Název produktu">
             <input type="number" id="pPrice" placeholder="Cena v Kč">
-            
-            <label style="font-size: 0.65rem; font-weight: 800; color: #94a3b8; display: block; margin-bottom: 5px; margin-left: 5px;">VYBER IKONU:</label>
             <select id="pIcon">
                 <option value="fa-hockey-puck">🏒 Puk</option>
-                <option value="fa-circle-dot">⚪ Puk s logem</option>
-                <option value="fa-mitten">🧢 Kulich / Čepice</option>
                 <option value="fa-scroll">🧣 Šála</option>
-                <option value="fa-chair">💺 Podsedák</option>
-                <option value="fa-shirt">👕 Dres</option>
-                <option value="fa-square">🧲 Magnetka</option>
-                <option value="fa-hat-cowboy">🎓 Kšiltovka</option>
+                <option value="fa-shirt">👕 Dres/Oblečení</option>
+                <option value="fa-mitten">🧢 Čepice</option>
+                <option value="fa-mug-hot">☕ Hrnek</option>
                 <option value="fa-key">🔑 Klíčenka</option>
-                <option value="fa-mug-hot">☕ Hrníček</option>
+                <option value="fa-square">🧲 Magnetka</option>
                 <option value="fa-pen">🖋️ Propiska</option>
+                <option value="fa-flag">🚩 Vlajka</option>
             </select>
-
-            <button class="btn btn-blue" style="background:var(--gold); color:var(--blue)" onclick="saveProd()">Uložit do nabídky</button>
+            <button class="btn btn-blue" onclick="saveProd()">PŘIDAT DO NABÍDKY</button>
             
-            <div id="pList" style="margin-top: 25px; border-top: 2px solid #f1f5f9; padding-top: 10px;">
+            <div id="pList" style="margin-top: 25px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
                 </div>
         </div>
     </div>
 
-    <div class="stats-side">
-        <h2><i class="fa-solid fa-chart-bar"></i> Statistiky prodejů</h2>
+    <div class="side stats-side">
+        <h2><i class="fa-solid fa-chart-line"></i> Přehled tržeb</h2>
         
         <div class="stat-grid">
             <div class="stat-item"><b id="sumRev">0 Kč</b><span>Tržba celkem</span></div>
@@ -104,7 +134,7 @@
         </div>
 
         <div class="card">
-            <h2>Filtr podle zápasu</h2>
+            <h2><i class="fa-solid fa-filter"></i> Analýza prodeje</h2>
             <select id="mFilter" onchange="refreshData()"></select>
             
             <div id="topSellers" style="margin-top:20px;">
@@ -112,7 +142,7 @@
         </div>
 
         <div class="card">
-            <h2><i class="fa-solid fa-clock-rotate-left"></i> Historie a mazání</h2>
+            <h2><i class="fa-solid fa-history"></i> Historie sezóny</h2>
             <div id="mHistory">
                 </div>
         </div>
@@ -122,7 +152,7 @@
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, onSnapshot, collection, deleteDoc, getDocs, query, where, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyD3l9DlvXV5Nv3FKJxHidfTIoWV-jUv4Bw",
@@ -137,7 +167,19 @@
     const db = getFirestore(app);
     let sales = [];
 
-    // --- OVLÁDÁNÍ ---
+    // --- NASTAVENÍ ÚČTU ---
+    onSnapshot(doc(db, "nastaveni", "platba"), s => {
+        if(s.exists()) document.getElementById("bankAccInput").value = s.data().cislo_uctu;
+    });
+
+    window.saveBank = async () => {
+        const acc = document.getElementById("bankAccInput").value;
+        if(!acc.includes("/")) { alert("Zadejte účet ve formátu: číslo/kód banky"); return; }
+        await setDoc(doc(db, "nastaveni", "platba"), { cislo_uctu: acc });
+        alert("Číslo účtu pro QR platby bylo aktualizováno.");
+    };
+
+    // --- OVLÁDÁNÍ ZÁPASU ---
     window.runMatch = async () => {
         const n = document.getElementById("mName").value;
         if(!n) return;
@@ -147,19 +189,41 @@
         document.getElementById("mName").value = "";
     };
 
-    window.endMatch = async () => { if(confirm("Opravdu ukončit zápas a odhlásit všechny pokladny?")) await deleteDoc(doc(db, "nastaveni", "aktivni_zapas")); };
+    window.endMatch = async () => { 
+        if(confirm("Opravdu ukončit zápas? Všechny pokladny budou odhlášeny.")) {
+            await deleteDoc(doc(db, "nastaveni", "aktivni_zapas")); 
+        }
+    };
 
+    // --- PRODUKTY ---
     window.saveProd = async () => {
         const n = document.getElementById("pName").value;
         const p = document.getElementById("pPrice").value;
         const i = document.getElementById("pIcon").value;
         if(n && p) {
             await setDoc(doc(db, "produkty", n), { name: n, price: parseInt(p), icon: i });
-            document.getElementById("pName").value = ""; document.getElementById("pPrice").value = "";
+            document.getElementById("pName").value = ""; 
+            document.getElementById("pPrice").value = "";
         }
     };
 
-    // --- LIVE UPDATES ---
+    onSnapshot(collection(db, "produkty"), snap => {
+        const l = document.getElementById("pList"); l.innerHTML = "";
+        snap.forEach(d => {
+            const data = d.data();
+            l.innerHTML += `
+                <div class="m-row">
+                    <span><i class="fa-solid ${data.icon || 'fa-hockey-puck'}"></i> ${data.name} <b>${data.price} Kč</b></span>
+                    <i class="fa-solid fa-trash-can trash-btn" onclick="deleteProd('${d.id}')"></i>
+                </div>`;
+        });
+    });
+
+    window.deleteProd = async (id) => {
+        if(confirm("Smazat produkt z nabídky?")) await deleteDoc(doc(db, "produkty", id));
+    };
+
+    // --- ANALYTIKA ---
     onSnapshot(doc(db, "nastaveni", "aktivni_zapas"), s => {
         const live = document.getElementById("liveMatch");
         const setup = document.getElementById("setupMatch");
@@ -172,33 +236,25 @@
         }
     });
 
-    onSnapshot(collection(db, "produkty"), snap => {
-        const l = document.getElementById("pList"); l.innerHTML = "";
-        snap.forEach(d => {
-            const data = d.data();
-            l.innerHTML += `
-                <div class="m-row">
-                    <span><i class="fa-solid ${data.icon || 'fa-hockey-puck'}"></i> ${data.name} (${data.price} Kč)</span>
-                    <i class="fa-solid fa-trash" style="color:red; cursor:pointer; margin:0" onclick="deleteDoc(doc(db, 'produkty', '${d.id}'))"></i>
-                </div>`;
-        });
-    });
-
     onSnapshot(collection(db, "historie_zapasu"), snap => {
         const hist = document.getElementById("mHistory");
         const filter = document.getElementById("mFilter");
         const cur = filter.value;
-        hist.innerHTML = ""; filter.innerHTML = '<option value="all">Celá sezóna</option>';
+        hist.innerHTML = ""; filter.innerHTML = '<option value="all">CELÁ SEZÓNA</option>';
         snap.forEach(d => {
             const n = d.id;
             filter.innerHTML += `<option value="${n}">${n}</option>`;
-            hist.innerHTML += `<div class="m-row"><b>${n}</b><button class="btn" style="width:auto; padding:5px 10px; font-size:0.6rem; background:#fee2e2; color:red" onclick="fullDelete('${n}')">SMAZAT</button></div>`;
+            hist.innerHTML += `
+                <div class="m-row">
+                    <b>${n}</b>
+                    <button class="btn" style="width:auto; padding:5px 12px; font-size:0.6rem; background:#fee2e2; color:var(--red)" onclick="fullDelete('${n}')">SMAZAT DATA</button>
+                </div>`;
         });
         filter.value = cur || "all";
     });
 
     window.fullDelete = async (n) => {
-        if(!confirm(`Smazat zápas ${n} a všechny tržby?`)) return;
+        if(!confirm(`Smazat zápas ${n} a všechny jeho tržby? Tato akce je nevratná.`)) return;
         await deleteDoc(doc(db, "historie_zapasu", n));
         const q = query(collection(db, "objednavky"), where("zapas", "==", n));
         const snap = await getDocs(q);
@@ -214,6 +270,7 @@
         const f = document.getElementById("mFilter").value;
         const filtered = f === "all" ? sales : sales.filter(s => s.zapas === f);
         let totalRev = 0; let totalQty = 0; let pMap = {};
+        
         filtered.forEach(s => {
             totalRev += s.celkem;
             s.polozky.forEach(p => {
@@ -221,24 +278,26 @@
                 pMap[p.name] = (pMap[p.name] || 0) + p.qty;
             });
         });
+
         document.getElementById("sumRev").innerText = totalRev.toLocaleString() + " Kč";
         document.getElementById("sumQty").innerText = totalQty;
+        
         const topArea = document.getElementById("topSellers");
         const sorted = Object.entries(pMap).sort((a,b) => b[1] - a[1]);
-        if(!sorted.length) { topArea.innerHTML = "Zatím žádné prodeje."; return; }
+        
+        if(!sorted.length) { topArea.innerHTML = "<p style='text-align:center; opacity:0.5;'>Žádná data k zobrazení.</p>"; return; }
+        
         const max = sorted[0][1];
         topArea.innerHTML = sorted.map(([name, count]) => `
-            <div style="margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; font-size:0.75rem; font-weight:700;"><span>${name}</span><span>${count} ks</span></div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${(count/max)*100}%"></div></div>
+            <div style="margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800; margin-bottom:4px;">
+                    <span>${name}</span>
+                    <span style="color:var(--vlasim-blue)">${count} ks</span>
+                </div>
+                <div class="progress-bg"><div class="progress-fill" style="width:${(count/max)*100}%"></div></div>
             </div>
         `).join("");
     };
-
-    // Export funkcí do window pro HTML onclick
-    window.deleteDoc = deleteDoc;
-    window.doc = doc;
-    window.db = db;
 </script>
 </body>
 </html>
